@@ -1,5 +1,8 @@
 #pragma once
 
+// <cstdlib> for malloc
+// <cstring> to handle c-style strings (std::type_info::name())
+// <any> to use std::any as the return type for accessing elements using indices
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -7,18 +10,21 @@
 
 class List
 {
+	// I = int, D = double, C = char, S = string, L = List
 	enum Types { I, D, C, S, L };
 
+	// The structure for each element of the list
 	struct Structure
 	{
 		Types type;
 		void* value;
 	};
 
-	Structure* data;
-	size_t len;
-	size_t size;
+	Structure* data;	// The array of Structure items used to store each element of the list
+	size_t len;			// Stores length of the list
+	size_t size;		// To keep track of memory required by data as it's dynamically resized. (sizeof(data) = sizeof(Structure) * size)
 
+	// Setter function definitions to handle recursion required to accept multiple parameters for generating the list
 	void setter() {}
 
 	template <class First, class ... T>
@@ -28,6 +34,7 @@ class List
 		setter(rest...);
 	}
 
+	// Memory allocater for data (incremented by 5)
 	inline void ensureSize()
 	{
 		if (len == size)
@@ -35,12 +42,14 @@ class List
 	}
 
 public:
+	// Non-parameterised constructor
 	List()
 	{
 		data = reinterpret_cast<Structure*>(malloc(sizeof(Structure) * (size = 5)));
 		len = 0;
 	}
 
+	// Copy constructor
 	List (const List& l)
 	{
 		len = l.len;
@@ -48,6 +57,9 @@ public:
 
 		data = reinterpret_cast<Structure*>(malloc(sizeof(Structure) * size));
 		
+		// Loop to copy every element properly into new list
+		// For primitive types (C types), std::memcpy is used
+		// For std::string and List, placement new is used to maintain object structure
 		for (size_t i = 0; i < len; i++)
 		{
 			data[i].type = l.data[i].type;
@@ -76,6 +88,9 @@ public:
 		}
 	}
 
+	// Parameterised constructor
+	// Designed to accept infinite list of arguments
+	// Passes control to setter()
 	template <class ... T>
 	List (const T&... args)
 	{
@@ -84,6 +99,8 @@ public:
 		setter(args...);
 	}
 
+	// append() overload for std::string arguments
+	// Separate overload since placement new is required for dynamic object creation
 	void append(std::string x)
 	{
 		ensureSize();
@@ -94,6 +111,8 @@ public:
 		new(data[len++].value) std::string(x);
 	}
 
+	// append() overload for List() arguments
+	// Again separate overload since placement new is used
 	void append(List x)
 	{
 		ensureSize();
@@ -104,6 +123,8 @@ public:
 		new(data[len++].value) List(x);
 	}	
 
+	// append() overload to handle strings when generated using double-quotes ("")
+	// stores as std::string
 	void append(const char* x)
 	{
 		ensureSize();
@@ -114,6 +135,8 @@ public:
 		new(data[len++].value) std::string(x);
 	}
 
+	// General append() overload to handle primitive types
+	// Dereferencing is used for storing
 	template <class T>
 	void append(T x)
 	{
@@ -132,6 +155,8 @@ public:
 		*reinterpret_cast<T*>(data[len++].value) = x;
 	}
 
+	// operator[] overload for accessing elements alone
+	// Returns std::any object to comply with C++ style static-typing
 	const std::any operator[] (const int index) const
 	{
 		int i = index;
@@ -159,6 +184,8 @@ public:
 		return a;
 	}
 
+	// Stream insertion operator overload
+	// Prints out the list python style
 	friend std::ostream& operator<< (std::ostream& buff, List& l)
 	{
 		buff << '[';
@@ -188,8 +215,12 @@ public:
 		return buff;
 	}
 
+	// Declaring len function as friend to use List::len
 	friend const size_t len(const List&);
 
+	// Destructor
+	// Uses delete for std::string and List elements
+	// Uses free() for everything else
 	~List()
 	{
 		for (size_t i = 0; i < len; i++)
@@ -206,6 +237,7 @@ public:
 	}
 };
 
+// Function to return length of the accepted list
 const size_t len(const List& l)
 {
 	return l.len;
