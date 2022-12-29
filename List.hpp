@@ -21,7 +21,7 @@ class List
 	};
 
 	Structure* data;	// The array of Structure items used to store each element of the list
-	size_t len;			// Stores length of the list
+	size_t len;		// Stores length of the list
 	size_t size;		// To keep track of memory required by data as it's dynamically resized. (sizeof(data) = sizeof(Structure) * size)
 
 	// Setter function definitions to handle recursion required to accept multiple parameters for generating the list
