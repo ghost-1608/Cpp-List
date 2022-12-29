@@ -24,7 +24,8 @@ class List
 	size_t len;		// Stores length of the list
 	size_t size;		// To keep track of memory required by data as it's dynamically resized. (sizeof(data) = sizeof(Structure) * size)
 
-	// Setter function definitions to handle recursion required to accept multiple parameters for generating the list
+	// Setter function definitions to handle recursion required for variadic template parsing
+	// Function exists to handle multiple paramaters from the parameterised constructor for generating the list
 	void setter() {}
 
 	template <class First, class ... T>
