@@ -125,6 +125,8 @@ public:
 			data[len].type = D;
 		else if (!strncmp(typeid(T).name(), "c", 2))
 			data[len].type = C;
+		else
+			return;
 
 		data[len].value = malloc(sizeof(T));
 		*reinterpret_cast<T*>(data[len++].value) = x;
@@ -186,7 +188,7 @@ public:
 		return buff;
 	}
 
-	friend size_t len(List&);
+	friend const size_t len(const List&);
 
 	~List()
 	{
@@ -204,7 +206,7 @@ public:
 	}
 };
 
-size_t len(List& l)
+const size_t len(const List& l)
 {
 	return l.len;
 }
