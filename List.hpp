@@ -125,7 +125,7 @@ public:
 	}	
 
 	// append() overload to handle strings when generated using double-quotes ("")
-	// stores as std::string
+	// Stores as std::string
 	void append(const char* x)
 	{
 		ensureSize();
@@ -156,8 +156,9 @@ public:
 		*reinterpret_cast<T*>(data[len++].value) = x;
 	}
 
-	// operator[] overload for accessing elements alone
+	// operator[] overload for accessing elements (doesn't allow setting)
 	// Returns std::any object to comply with C++ style static-typing
+	// Designed to return arbitrary std::any object in case type can't be handled
 	const std::any operator[] (const int index) const
 	{
 		int i = index;
