@@ -60,7 +60,7 @@ public:
 		
 		// Loop to copy every element properly into new list
 		// For primitive types (C types), std::memcpy is used
-		// For std::string and List, placement new is used to maintain object structure
+		// For std::string and List, placement new is used to avoid copying pointers to dynamically allocated memory
 		for (size_t i = 0; i < len; i++)
 		{
 			data[i].type = l.data[i].type;
